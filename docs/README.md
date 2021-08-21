@@ -17,6 +17,10 @@ You can read the [Branca Token Specification][7] for design-specific details.
 
 ### Usage
 
+```c#
+using Branca;
+```
+
 #### Issuing Secret Key
 
 The secret key is to be 32 bytes in size. You can generate a random one using the following:
@@ -37,13 +41,13 @@ HexKey key = "73757065727365637265746b6579796f7573686f756c646e6f74636f6d6d6974";
 Once you have a secret key, be it a `byte[]` type or a `HexKey` type, you can configure Branca as follows:
 
 ```c#
-Branca branca = new(key);
+BrancaService branca = new(key);
 ```
 
 Branca can optionally take in `BrancaSettings`, which has a few parameters for configuration. They come with sensible defaults so you may not need to change it at all.
 
 ```c#
-Branca branca = new(key, new BrancaSettings
+BrancaService branca = new(key, new BrancaSettings
 {
   MaxStackLimit = 1024,
   TokenLifetimeInSeconds = 3600

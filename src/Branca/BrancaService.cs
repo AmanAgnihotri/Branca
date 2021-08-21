@@ -9,7 +9,7 @@ namespace Branca
   using System.Security.Cryptography;
   using System.Text;
 
-  public sealed class Branca
+  public sealed class BrancaService
   {
     private const int KeyLength = 32;
     private const int VersionLength = 1;
@@ -26,14 +26,14 @@ namespace Branca
     private readonly ITimer _timer;
     private readonly XChaCha20Poly1305 _algorithm;
 
-    public Branca(HexKey hexKey) : this(hexKey, new()) { }
+    public BrancaService(HexKey hexKey) : this(hexKey, new()) { }
 
-    public Branca(HexKey hexKey, BrancaSettings settings) :
+    public BrancaService(HexKey hexKey, BrancaSettings settings) :
       this(hexKey.Bytes, settings) { }
 
-    public Branca(ReadOnlyMemory<byte> key) : this(key, new()) { }
+    public BrancaService(ReadOnlyMemory<byte> key) : this(key, new()) { }
 
-    public Branca(ReadOnlyMemory<byte> key, BrancaSettings settings)
+    public BrancaService(ReadOnlyMemory<byte> key, BrancaSettings settings)
     {
       if (key.Length != KeyLength)
       {

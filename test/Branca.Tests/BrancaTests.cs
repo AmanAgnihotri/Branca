@@ -14,7 +14,7 @@ namespace Branca.Tests
     [MemberData(nameof(ValidTestData))]
     public void EncodeAndDecodeValidCasesProperly(BrancaState data)
     {
-      Branca branca = BrancaFactory.Create(data.Key, data.Timestamp);
+      BrancaService branca = BrancaFactory.Create(data.Key, data.Timestamp);
 
       string token = branca.Encode(
         data.Message.Span, data.Timestamp, data.Nonce.Span);
@@ -36,7 +36,7 @@ namespace Branca.Tests
     [MemberData(nameof(InvalidTestData))]
     public void FailToDecodeInvalidCases(BrancaState data)
     {
-      Branca branca = BrancaFactory.Create(data.Key, data.Timestamp);
+      BrancaService branca = BrancaFactory.Create(data.Key, data.Timestamp);
 
       bool isValid = branca.TryDecode(
         data.Token, out Span<byte> message, out uint timestamp);
