@@ -12,6 +12,7 @@
     <PackageVersion>0.1.0</PackageVersion>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/AmanAgnihotri/Branca.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>Branca;Token;Authentication;Authorization</PackageTags>
@@ -26,6 +27,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NaCl.Core" Version="2.0.2"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../docs/icon.png">
+      <Pack>true</Pack>
+      <PackagePath>/</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
