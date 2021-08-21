@@ -5,7 +5,7 @@ namespace Branca.Tests
 {
   public sealed class BrancaFactory
   {
-    public static Branca Create(HexKey key, uint timestamp)
+    public static BrancaService Create(HexKey key, uint timestamp)
     {
       return new(key, new() {Timer = new MockTimer(timestamp)});
     }
