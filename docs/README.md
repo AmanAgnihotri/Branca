@@ -109,6 +109,88 @@ else
 }
 ```
 
+### More Examples
+
+#### Using System.Text.Json
+
+```c#
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+```
+
+Suppose you have a payload structure as follows:
+
+```c#
+public sealed record Payload
+{
+  [JsonPropertyName("s")]
+  public ulong Subject { get; init; }
+
+  [JsonPropertyName("n")]
+  public string Name { get; init; }
+
+  [JsonPropertyName("e")]
+  public string Email { get; init; }
+}
+```
+
+I explicitly setup the JsonPropertyName values for the properties to conserve token space.
+
+Let's initialize the payload with some data:
+
+```c#
+Payload payload = new()
+{
+  Subject = 123456789, Name = "Some Name", Email = "some@example.com"
+};
+```
+
+You can additionally setup the `JsonSerializerOptions`:
+
+```c#
+JsonSerializerOptions options = new()
+{
+  PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+```
+
+And we finally can print a serialized version of this payload:
+
+```c#
+Console.WriteLine(JsonSerializer.Serialize(payload, options));
+// {"s":123456789,"n":"Some Name","e":"some@example.com"}
+```
+
+We can tell `JsonSerializer` to serialize this payload directly to a byte array:
+
+```c#
+byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(payload, options);
+```
+
+And finally, with a `BrancaService` instance, we can encode and decode it as follows:
+
+```c#
+string token = branca.Encode(bytes);
+// m6ehc87WdoSdE4WBJ1Phgt1a0OPXc3zOKn9NE3Rz7RWx2MJwaBZuI4s50wzRWahrGqJvGO2kXwvwbINpTdyP2qtJmuFuq9ADxFz05JEFAB2icTTF7GNr7TOS6reUU2nir8eU7
+```
+
+```c#
+if (branca.TryDecode(token, out Span<byte> data, out uint createTime))
+{
+  var decodedPayload = JsonSerializer.Deserialize<Payload>(data, options);
+
+  if (decodedPayload is not null)
+  {
+    Console.WriteLine(decodedPayload.Subject); // 123456789
+    Console.WriteLine(decodedPayload.Name);    // Some Name
+    Console.WriteLine(decodedPayload.Email);   // some@example.com
+  }
+
+  Console.WriteLine(DateTimeOffset.FromUnixTimeSeconds(createTime));
+}
+```
+
 ---
 
 ### License
