@@ -191,6 +191,65 @@ if (branca.TryDecode(token, out byte[] data, out uint createTime))
 }
 ```
 
+#### Using MessagePack
+
+```c#
+using MessagePack;
+using System;
+```
+
+Suppose you have a payload structure as follows:
+
+```c#
+[MessagePackObject]
+public sealed record Payload
+{
+  [Key(0)]
+  public ulong Subject { get; init; }
+
+  [Key(1)]
+  public string Name { get; init; }
+
+  [Key(2)]
+  public string Email { get; init; }
+}
+```
+
+Let's initialize the payload with some data:
+
+```c#
+Payload payload = new()
+{
+  Subject = 123456789, Name = "Some Name", Email = "some@example.com"
+};
+```
+
+We can tell `MessagePackSerializer` to serialize this payload to a byte array:
+
+```c#
+byte[] bytes = MessagePackSerializer.Serialize(payload);
+```
+
+And finally, with a `BrancaService` instance, we can encode and decode it as follows:
+
+```c#
+string token = branca.Encode(bytes);
+// Jm79HC2CHnD1glDNBPucf02yCnyF70Kv2M7ELsNNqI1kJlX8ftrlV0IIYvuyHURpgrzXmvu4uuhmbmOkX3d0gBpxguUDXomxMgKeuCtpj
+```
+
+```c#
+if (branca.TryDecode(token, out byte[] data, out uint createTime))
+{
+  var decodedPayload = MessagePackSerializer.Deserialize<Payload>(data);
+
+  Console.WriteLine(decodedPayload.Subject); // 123456789
+  Console.WriteLine(decodedPayload.Name);    // Some Name
+  Console.WriteLine(decodedPayload.Email);   // some@example.com
+
+  Console.WriteLine(DateTimeOffset.FromUnixTimeSeconds(createTime));
+}
+```
+
 ---
 
 ### License
