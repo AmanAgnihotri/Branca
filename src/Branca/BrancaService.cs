@@ -108,14 +108,14 @@ namespace Branca
       return Base62.Encode(token);
     }
 
-    public bool TryDecode(string token, out Span<byte> payload)
+    public bool TryDecode(string token, out byte[] payload)
     {
       return TryDecode(token, out payload, out _);
     }
 
     public bool TryDecode(
       string token,
-      out Span<byte> payload,
+      out byte[] payload,
       out uint createTime)
     {
       ReadOnlySpan<byte> data = Base62.Decode(token);
@@ -125,7 +125,7 @@ namespace Branca
 
       if (version.IsEmpty || version[0] != Version)
       {
-        payload = Span<byte>.Empty;
+        payload = Array.Empty<byte>();
         createTime = default;
 
         return false;
@@ -138,7 +138,7 @@ namespace Branca
 
       if (_lifetime.HasValue && _lifetime < _timer.UnixNow - creationTime)
       {
-        payload = Span<byte>.Empty;
+        payload = Array.Empty<byte>();
         createTime = default;
 
         return false;
@@ -173,7 +173,7 @@ namespace Branca
       }
       catch (Exception)
       {
-        payload = Span<byte>.Empty;
+        payload = Array.Empty<byte>();
         createTime = default;
 
         return false;

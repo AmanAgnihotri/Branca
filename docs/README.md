@@ -85,7 +85,7 @@ Likewise, you can make use of MessagePack or Protocol Buffer or even System.Text
 Decoding a Branca token for validation is just as simple:
 
 ```c#
-if (branca.TryDecode(token, out Span<byte> payload))
+if (branca.TryDecode(token, out byte[] payload))
 {
   // Hello, World!
   string message = Encoding.UTF8.GetString(payload);
@@ -99,7 +99,7 @@ Decoding validates the token and even confirms the expiry (if you have setup som
 For whatever reason, if you also want to get the time the Branca token was created, you can do the following:
 
 ```c#
-if (branca.TryDecode(token, out Span<byte> payload, out uint createTime))
+if (branca.TryDecode(token, out byte[] payload, out uint createTime))
 {
   // successful decoding
 }
@@ -176,7 +176,7 @@ string token = branca.Encode(bytes);
 ```
 
 ```c#
-if (branca.TryDecode(token, out Span<byte> data, out uint createTime))
+if (branca.TryDecode(token, out byte[] data, out uint createTime))
 {
   var decodedPayload = JsonSerializer.Deserialize<Payload>(data, options);
 
