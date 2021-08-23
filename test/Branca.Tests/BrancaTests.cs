@@ -4,7 +4,6 @@
 namespace Branca.Tests
 {
   using System;
-  using System.Text;
   using Xunit;
   using static TestData;
 
@@ -22,7 +21,7 @@ namespace Branca.Tests
       Assert.Equal(data.Token, token);
 
       bool isValid = branca.TryDecode(
-        data.Token, out Span<byte> message, out uint timestamp);
+        data.Token, out byte[] message, out uint timestamp);
 
       Assert.StrictEqual(data.IsValid, isValid);
 
@@ -38,10 +37,10 @@ namespace Branca.Tests
       BrancaService branca = BrancaFactory.Create(data.Key, data.Timestamp);
 
       bool isValid = branca.TryDecode(
-        data.Token, out Span<byte> message, out uint timestamp);
+        data.Token, out byte[] message, out uint timestamp);
 
       Assert.StrictEqual(data.IsValid, isValid);
-      Assert.True(message == Span<byte>.Empty);
+      Assert.True(message == Array.Empty<byte>());
       Assert.True(timestamp == default);
     }
 
