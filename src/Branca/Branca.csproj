@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
     <Authors>Aman Agnihotri</Authors>
     <Product>Branca</Product>
     <Title>Branca</Title>
