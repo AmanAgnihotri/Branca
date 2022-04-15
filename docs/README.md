@@ -1,7 +1,7 @@
 <p align="center"><img src="/docs/logo.png" width=300px height=300px/></p>
 
 # Branca
-> A .NET 5 library for generating and validating Branca tokens.
+> A .NET 6 library for generating and validating Branca tokens.
 
 ![Status][1] [![Nuget][2]][5] [![Downloads][3]][5] ![License][4]
 
@@ -254,8 +254,8 @@ if (branca.TryDecode(token, out byte[] data, out uint createTime))
 
 ### License
 
-Branca is a .NET 5 library for generating and validating Branca tokens.  
-Copyright © 2021 Aman Agnihotri (amanagnihotri@pm.me)  
+Branca is a .NET 6 library for generating and validating Branca tokens.  
+Copyright © 2022 Aman Agnihotri (amanagnihotri@pm.me)  
 
 Branca is free software: you can redistribute it and/or modify  
 it under the terms of the GNU Lesser General Public License as published  
