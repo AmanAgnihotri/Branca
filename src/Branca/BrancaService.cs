@@ -9,7 +9,7 @@ using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
 
-public sealed class BrancaService
+public sealed class BrancaService : IBrancaService
 {
   private const int KeyLength = 32;
   private const int VersionLength = 1;
