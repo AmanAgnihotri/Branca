@@ -9,7 +9,7 @@
     <Title>Branca</Title>
     <Description>A .NET 6 library for generating and validating Branca tokens.</Description>
     <Copyright>Copyright © 2022 Aman Agnihotri</Copyright>
-    <PackageVersion>0.4.0</PackageVersion>
+    <PackageVersion>0.5.0</PackageVersion>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
