@@ -3,8 +3,6 @@
 
 namespace Branca.Tests;
 
-using System;
-
 public sealed record BrancaState
 {
   public HexKey Key { get; }

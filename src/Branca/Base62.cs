@@ -3,9 +3,6 @@
 
 namespace Branca;
 
-using System;
-using System.Collections.Generic;
-
 internal sealed class Base62
 {
   private const string CharacterSet =

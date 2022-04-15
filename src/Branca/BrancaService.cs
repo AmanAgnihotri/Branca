@@ -4,7 +4,6 @@
 namespace Branca;
 
 using NaCl.Core;
-using System;
 using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;

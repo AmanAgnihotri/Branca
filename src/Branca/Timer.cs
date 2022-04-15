@@ -3,8 +3,6 @@
 
 namespace Branca;
 
-using System;
-
 public interface ITimer
 {
   uint UnixNow { get; }

@@ -3,8 +3,6 @@
 
 namespace Branca;
 
-using System;
-
 public sealed record HexKey
 {
   private const int KeyLength = 32;

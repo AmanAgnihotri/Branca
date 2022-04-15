@@ -3,7 +3,6 @@
 
 namespace Branca.Tests;
 
-using System;
 using Xunit;
 using static TestData;
 

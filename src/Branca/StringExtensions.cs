@@ -3,9 +3,6 @@
 
 namespace Branca;
 
-using System;
-using System.Linq;
-
 internal static class StringExtensions
 {
   public static ReadOnlyMemory<byte> AsBytesFromHexString(this string? hexKey)

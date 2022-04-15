@@ -3,8 +3,6 @@
 
 namespace Branca;
 
-using System;
-
 public interface IBrancaService
 {
   string Encode(string payload);
