@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2021 Aman Agnihotri
+// Copyright © 2022 Aman Agnihotri
 
-namespace Branca.Tests
+namespace Branca.Tests;
+
+public sealed class MockTimer : ITimer
 {
-  public sealed class MockTimer : ITimer
-  {
-    public uint UnixNow { get; }
+  public uint UnixNow { get; }
 
-    public MockTimer(uint fixedTime)
-    {
-      UnixNow = fixedTime;
-    }
+  public MockTimer(uint fixedTime)
+  {
+    UnixNow = fixedTime;
   }
 }

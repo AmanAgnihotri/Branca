@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2021 Aman Agnihotri
+// Copyright © 2022 Aman Agnihotri
 
-namespace Branca.Tests
+namespace Branca.Tests;
+
+public static partial class TestData
 {
-  public static partial class TestData
-  {
-    public const string Nonce =
-      "beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
+  public const string Nonce =
+    "beefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeefbeef";
 
-    public const string? NullNonce = null;
-  }
+  public const string? NullNonce = null;
 }
