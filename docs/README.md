@@ -272,7 +272,7 @@ along with Branca.  If not, see [GNU Licenses](https://www.gnu.org/licenses/).
 
 ---
 
-[1]: https://img.shields.io/github/workflow/status/AmanAgnihotri/Branca/.NET?style=for-the-badge
+[1]: https://img.shields.io/github/actions/workflow/status/AmanAgnihotri/Branca/dotnet.yml?branch=main&style=for-the-badge
 [2]: https://img.shields.io/nuget/v/Branca?style=for-the-badge
 [3]: https://img.shields.io/nuget/dt/Branca?style=for-the-badge
 [4]: https://img.shields.io/github/license/AmanAgnihotri/Branca?style=for-the-badge
