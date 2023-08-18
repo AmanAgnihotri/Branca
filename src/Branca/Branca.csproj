@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <Authors>Aman Agnihotri</Authors>
     <Product>Branca</Product>
     <Title>Branca</Title>
-    <Description>A .NET 6 library for generating and validating Branca tokens.</Description>
+    <Description>A .NET Standard 2.1 library for generating and validating Branca tokens.</Description>
     <Copyright>Copyright © 2022 Aman Agnihotri</Copyright>
     <PackageVersion>0.6.0</PackageVersion>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
