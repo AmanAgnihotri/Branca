@@ -25,22 +25,30 @@ using Branca;
 
 #### Issuing Secret Key
 
-The secret key is to be 32 bytes in size. You can generate a random one using the following:
+The secret key is 32 bytes in size. The `BrancaKey` type can generate a random one and convert between raw bytes and several textual encodings:
 
 ```c#
-byte[] key = new byte[32];
-RandomNumberGenerator.Fill(key);
+BrancaKey key = BrancaKey.Generate();
+
+string base64Url = key.ToBase64Url(); // 43 URL-safe characters
 ```
 
-Alternatively, you can setup a hexadecimal string consisting of exactly 64 characters:
+You can also load a key from an existing encoding:
 
 ```c#
-HexKey key = "73757065727365637265746b6579796f7573686f756c646e6f74636f6d6d6974";
+BrancaKey key = BrancaKey.FromBase64Url("c3VwZXJzZWNyZXRrZXl5b3VzaG91bGRub3Rjb21taXQ");
+BrancaKey key = BrancaKey.FromHex("73757065727365637265746b6579796f7573686f756c646e6f74636f6d6d6974");
+BrancaKey key = BrancaKey.FromBase62("RNUCYvOYtxwoz7WVNmoEJl4RBn2CU2GAewrnABzkNPA");
+BrancaKey key = BrancaKey.FromBytes(bytes);
 ```
+
+Base64Url and Base62 both encode the same 32 bytes as hexadecimal does, in 43 characters instead of 64. Base62 shares its alphabet with the tokens Branca produces.
+
+> The older `HexKey` type still works but is deprecated in favour of `BrancaKey.FromHex`.
 
 #### Configuring Branca
 
-Once you have a secret key, be it a `byte[]` type or a `HexKey` type, you can configure Branca as follows:
+Once you have a secret key, be it a `byte[]` or a `BrancaKey`, you can configure Branca as follows:
 
 ```c#
 BrancaService branca = new(key);
@@ -61,6 +69,8 @@ For the sake of performance, Branca allocates various resources during encoding 
 Branca also considers all tokens it generates to be valid for an hour from the time of their generation. You can configure this value based on your use-case. Alternatively, set it up as `null` to make Branca tokens valid forever.
 
 There exists a `Timer` configuration for `BrancaSettings` too. It comes with an internal implementation that uses current time accordingly. You can pass on your own implementation of this interface if you want to control the way time flows for Branca. This will not be needed in all general cases.
+
+A single `BrancaService` instance is safe for concurrent use. Encoding and decoding do not mutate any shared state, so you can configure one instance, register it as a singleton and use it from multiple threads.
 
 #### Encoding/Encrypting Payload
 
@@ -108,6 +118,33 @@ else
   // unauthorized attempt
 }
 ```
+
+### ASP.NET Core Authentication
+
+The `Branca.AspNetCore` package lets you protect endpoints with Branca tokens instead of JWTs. Register the scheme with a key:
+
+```c#
+builder.Services
+  .AddAuthentication(BrancaDefaults.AuthenticationScheme)
+  .AddBranca(options =>
+  {
+    options.Key = BrancaKey.FromBase64Url(builder.Configuration["Branca:Key"]!);
+  });
+
+builder.Services.AddAuthorization();
+```
+
+```c#
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("/me", (ClaimsPrincipal user) => user.Identity!.Name)
+  .RequireAuthorization();
+```
+
+Clients send the token as `Authorization: Bearer <token>`. By default, the payload is read as a flat JSON object where each property becomes a claim. `[Authorize(Roles = "admin")]` works when the payload carries a `role` array. `MapClaims` can configure the mapping for non-JSON payloads such as MessagePack as well.
+
+Since Branca uses symmetric encryption, whosoever validates a token can also issue one. This suits first-party session and API tokens where the same application (or a trusted set sharing the secret) does both. Token expiry is enforced by the token format itself via the `TokenLifetimeInSeconds`, so there is no separate `exp` claim to validate.
 
 ### More Examples
 
@@ -255,7 +292,7 @@ if (branca.TryDecode(token, out byte[] data, out uint createTime))
 ### License
 
 Branca is a .NET Standard 2.1 library for generating and validating Branca tokens.  
-Copyright © 2022 Aman Agnihotri (amanagnihotri@pm.me)  
+Copyright © 2022-2026 Aman Agnihotri (amanagnihotri@pm.me)  
 
 Branca is free software: you can redistribute it and/or modify  
 it under the terms of the GNU Lesser General Public License as published  
