@@ -17,6 +17,8 @@ Although not a goal, it is possible to use [Branca as an Alternative to JWT][9].
 
 You can read the [Branca Token Specification][10] for design-specific details.
 
+The core library targets .NET Standard 2.1 and .NET 10, and both packages are trimming and Native AOT compatible.
+
 ### Usage
 
 ```c#
@@ -67,6 +69,17 @@ BrancaService branca = new(key, new BrancaSettings
 For the sake of performance, Branca allocates various resources during encoding and decoding on the stack. To prevent abuse of the stack, a stack limit is enforced. If the limit is reached due to a large payload, it defaults to allocating it on the heap for the particular encoding/decoding. This limit is by default set to 1024 bytes.
 
 Branca also considers all tokens it generates to be valid for an hour from the time of their generation. You can configure this value based on your use-case. Alternatively, set it up as `null` to make Branca tokens valid forever.
+
+To rotate secrets without invalidating outstanding tokens, list the older keys in `PreviousKeys`. New tokens are always encrypted with the current key; decoding tries the current key first and then each previous key in order.
+
+```c#
+BrancaService branca = new(currentKey, new BrancaSettings
+{
+  PreviousKeys = [previousKey]
+});
+```
+
+If token issuers and validators run on machines with slightly different clocks, `ClockSkewInSeconds` tolerates the difference: tokens dated up to that many seconds in the future are accepted, and the lifetime is extended by the same amount. The default is zero, which also rejects any token dated in the future.
 
 There exists a `Timer` configuration for `BrancaSettings` too. It comes with an internal implementation that uses current time accordingly. You can pass on your own implementation of this interface if you want to control the way time flows for Branca. This will not be needed in all general cases.
 
@@ -143,6 +156,24 @@ app.MapGet("/me", (ClaimsPrincipal user) => user.Identity!.Name)
 ```
 
 Clients send the token as `Authorization: Bearer <token>`. By default, the payload is read as a flat JSON object where each property becomes a claim. `[Authorize(Roles = "admin")]` works when the payload carries a `role` array. `MapClaims` can configure the mapping for non-JSON payloads such as MessagePack as well.
+
+Alternatively, register the key once on the service collection and let the scheme pick it up. The same `IBrancaService` singleton can then be injected wherever tokens are issued:
+
+```c#
+builder.Services.AddBranca(
+  BrancaKey.FromBase64Url(builder.Configuration["Branca:Key"]!));
+
+builder.Services
+  .AddAuthentication(BrancaDefaults.AuthenticationScheme)
+  .AddBranca();
+```
+
+```c#
+app.MapPost("/login", (IBrancaService branca) =>
+  branca.Encode("""{ "name": "alice", "role": ["admin"] }"""));
+```
+
+An explicit `BrancaOptions.Key` takes precedence over the registered service, with the scheme then using its own `PreviousKeys`, `ClockSkewInSeconds` and other options.
 
 Since Branca uses symmetric encryption, whosoever validates a token can also issue one. This suits first-party session and API tokens where the same application (or a trusted set sharing the secret) does both. Token expiry is enforced by the token format itself via the `TokenLifetimeInSeconds`, so there is no separate `exp` claim to validate.
 

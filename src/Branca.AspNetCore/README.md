@@ -36,6 +36,36 @@ Clients send the token in the `Authorization` header:
 Authorization: Bearer <branca-token>
 ```
 
+## Issuing Tokens
+
+Register the key once on the service collection instead, and both the scheme and your issuing endpoints share one `IBrancaService`:
+
+```c#
+builder.Services.AddBranca(
+  BrancaKey.FromBase64Url(builder.Configuration["Branca:Key"]!));
+
+builder.Services
+  .AddAuthentication(BrancaDefaults.AuthenticationScheme)
+  .AddBranca();
+```
+
+```c#
+app.MapPost("/login", (IBrancaService branca) =>
+  branca.Encode("""{ "name": "alice", "role": ["admin"] }"""));
+```
+
+Key rotation and clock skew come from the registered `BrancaSettings`, or from `BrancaOptions` when the scheme is configured with an explicit key:
+
+```c#
+builder.Services.AddBranca(currentKey, new BrancaSettings
+{
+  PreviousKeys = [previousKey],
+  ClockSkewInSeconds = 300,
+});
+```
+
+The package is trimming and Native AOT compatible.
+
 ## Claims
 
 By default the decrypted payload is read as a flat JSON object, and each property becomes a claim. Array values (such as `"role": ["admin", "user"]`) yield one claim per element, so `[Authorize(Roles = "admin")]` works out of the box. The name and role claim types are configurable via `NameClaimType` and `RoleClaimType`, and the whole mapping can be replaced through `MapClaims` for non-JSON payloads such as MessagePack.

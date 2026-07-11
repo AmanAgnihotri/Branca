@@ -38,7 +38,9 @@ if (branca.TryDecode(token, out byte[] payload))
 }
 ```
 
-Tokens are valid for an hour by default; configure `BrancaSettings` to change the token lifetime and other options. A single `BrancaService` instance is safe for concurrent use.
+Tokens are valid for an hour by default; configure `BrancaSettings` to change the token lifetime and other options. Older keys listed in `PreviousKeys` keep validating after a rotation, and `ClockSkewInSeconds` tolerates clock drift between issuers and validators. A single `BrancaService` instance is safe for concurrent use.
+
+The library targets .NET Standard 2.1 and .NET 10, and is trimming and Native AOT compatible.
 
 See the [repository](https://github.com/AmanAgnihotri/Branca) for detailed documentation and examples.
 
