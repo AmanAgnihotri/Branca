@@ -14,6 +14,8 @@ public sealed class BrancaOptions : AuthenticationSchemeOptions
 
   public uint? TokenLifetimeInSeconds { get; set; } = 3600;
 
+  public uint ClockSkewInSeconds { get; set; }
+
   public uint MaxStackLimit { get; set; } = 1024;
 
   public string BearerScheme { get; set; } = "Bearer";

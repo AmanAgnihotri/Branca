@@ -9,6 +9,8 @@ public sealed record BrancaSettings
 
   public uint? TokenLifetimeInSeconds { get; init; } = 3600;
 
+  public uint ClockSkewInSeconds { get; init; }
+
   public IReadOnlyList<BrancaKey> PreviousKeys { get; init; } = [];
 
   public ITimer Timer { get; init; } = new Timer();

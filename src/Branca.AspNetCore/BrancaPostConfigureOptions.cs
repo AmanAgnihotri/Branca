@@ -21,6 +21,7 @@ internal sealed class BrancaPostConfigureOptions
     options.Service = new BrancaService(options.Key, new BrancaSettings
     {
       TokenLifetimeInSeconds = options.TokenLifetimeInSeconds,
+      ClockSkewInSeconds = options.ClockSkewInSeconds,
       MaxStackLimit = options.MaxStackLimit,
       PreviousKeys = options.PreviousKeys,
     });

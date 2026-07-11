@@ -21,6 +21,7 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
   private readonly uint _maxStackLimit;
   private readonly uint? _lifetime;
+  private readonly uint _clockSkew;
 
   private readonly ITimer _timer;
   private readonly XChaCha20Poly1305 _algorithm;
@@ -54,6 +55,7 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
     _maxStackLimit = settings.MaxStackLimit;
     _lifetime = settings.TokenLifetimeInSeconds;
+    _clockSkew = settings.ClockSkewInSeconds;
 
     _timer = settings.Timer;
     _algorithm = new XChaCha20Poly1305(key);
@@ -155,9 +157,20 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
     uint creationTime = BinaryPrimitives.ReadUInt32BigEndian(timestamp);
 
-    if (_lifetime.HasValue && _lifetime < _timer.UnixNow - creationTime)
+    if (_lifetime is { } lifetime)
     {
-      return false;
+      uint now = _timer.UnixNow;
+
+      bool fromTheFuture = creationTime > now &&
+        creationTime - now > _clockSkew;
+
+      bool expired = now > creationTime &&
+        now - creationTime > (ulong)lifetime + _clockSkew;
+
+      if (fromTheFuture || expired)
+      {
+        return false;
+      }
     }
 
     ReadOnlySpan<byte> header = data[..HeaderLength];

@@ -100,6 +100,25 @@ public sealed class BrancaAuthenticationTests
     Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
   }
 
+  [Fact(DisplayName = "A future token within the clock skew is accepted.")]
+  public async Task FutureTokenWithinTheClockSkewIsAccepted()
+  {
+    await using WebApplication app =
+      await StartAsync(o => o.ClockSkewInSeconds = 300);
+    using HttpClient client = app.GetTestClient();
+
+    uint future =
+      (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 200;
+
+    string token = Encode("""{ "name": "frank" }""", future);
+
+    using HttpResponseMessage response =
+      await GetAsync(client, "/secure", token);
+
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    Assert.Equal("frank", await response.Content.ReadAsStringAsync());
+  }
+
   [Fact(DisplayName = "A token from a previous key is accepted after rotation.")]
   public async Task TokenFromPreviousKeyIsAcceptedAfterRotation()
   {
