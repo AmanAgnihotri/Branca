@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+    - name: Restore Dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    - name: Test
+      run: dotnet test --no-build --configuration Release --verbosity normal
+    - name: Pack
+      run: dotnet pack --no-build --configuration Release --output packages
+    - name: NuGet Login
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: AmanAgnihotri
+    - name: Publish to NuGet
+      run: >
+        dotnet nuget push "packages/*.nupkg"
+        --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+        --source https://api.nuget.org/v3/index.json
+        --skip-duplicate

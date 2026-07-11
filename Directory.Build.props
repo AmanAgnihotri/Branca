@@ -6,6 +6,7 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
     <Authors>Aman Agnihotri</Authors>
   </PropertyGroup>
 

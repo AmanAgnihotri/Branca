@@ -7,7 +7,6 @@
     <Title>Branca</Title>
     <Description>A .NET Standard 2.1 library for generating and validating Branca tokens.</Description>
     <Copyright>Copyright © 2022-2026 Aman Agnihotri</Copyright>
-    <Version>0.8.0</Version>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
@@ -22,6 +21,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MinVer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

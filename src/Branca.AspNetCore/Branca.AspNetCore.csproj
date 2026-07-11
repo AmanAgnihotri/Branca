@@ -7,7 +7,6 @@
     <Title>Branca.AspNetCore</Title>
     <Description>ASP.NET Core authentication handler for Branca tokens.</Description>
     <Copyright>Copyright © 2026 Aman Agnihotri</Copyright>
-    <Version>0.1.0</Version>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
@@ -23,6 +22,10 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MinVer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
