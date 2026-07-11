@@ -157,6 +157,24 @@ app.MapGet("/me", (ClaimsPrincipal user) => user.Identity!.Name)
 
 Clients send the token as `Authorization: Bearer <token>`. By default, the payload is read as a flat JSON object where each property becomes a claim. `[Authorize(Roles = "admin")]` works when the payload carries a `role` array. `MapClaims` can configure the mapping for non-JSON payloads such as MessagePack as well.
 
+For example, with the MessagePack `Payload` record from the examples below, a typed mapping deserializes the payload once and returns exactly the claims it should carry:
+
+```c#
+options.MapClaims = payload =>
+{
+  Payload data = MessagePackSerializer.Deserialize<Payload>(payload);
+
+  return
+  [
+    new Claim("sub", data.Subject.ToString()),
+    new Claim("name", data.Name),
+    new Claim("email", data.Email),
+  ];
+};
+```
+
+Returning `null` rejects the token, and an exception thrown by the mapping fails authentication rather than the request.
+
 Alternatively, register the key once on the service collection and let the scheme pick it up. The same `IBrancaService` singleton can then be injected wherever tokens are issued:
 
 ```c#

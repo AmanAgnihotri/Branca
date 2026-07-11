@@ -70,6 +70,23 @@ The package is trimming and Native AOT compatible.
 
 By default the decrypted payload is read as a flat JSON object, and each property becomes a claim. Array values (such as `"role": ["admin", "user"]`) yield one claim per element, so `[Authorize(Roles = "admin")]` works out of the box. The name and role claim types are configurable via `NameClaimType` and `RoleClaimType`, and the whole mapping can be replaced through `MapClaims` for non-JSON payloads such as MessagePack.
 
+MessagePack payloads are typically int-keyed, so a typed mapping through your own payload contract works better than any generic convention:
+
+```c#
+options.MapClaims = payload =>
+{
+  TokenPayload data = MessagePackSerializer.Deserialize<TokenPayload>(payload);
+
+  return
+  [
+    new Claim("sub", data.Subject.ToString()),
+    new Claim("name", data.Name),
+  ];
+};
+```
+
+Returning `null` rejects the token, and an exception thrown by the mapping fails authentication rather than the request.
+
 Token expiry is enforced by the token format itself through `TokenLifetimeInSeconds`; there is no separate `exp` claim to validate.
 
 See the [repository](https://github.com/AmanAgnihotri/Branca) for more.
