@@ -5,25 +5,35 @@ namespace Branca.AspNetCore;
 
 using Microsoft.Extensions.Options;
 
-internal sealed class BrancaPostConfigureOptions
+internal sealed class BrancaPostConfigureOptions(IBrancaService? branca = null)
   : IPostConfigureOptions<BrancaOptions>
 {
   public void PostConfigure(string? name, BrancaOptions options)
   {
     ArgumentNullException.ThrowIfNull(options);
 
-    if (options.Key is null)
+    if (options.Key is { } key)
     {
-      throw new InvalidOperationException(
-        "A Branca key must be set on BrancaOptions.Key.");
+      options.Service = new BrancaService(key, new BrancaSettings
+      {
+        TokenLifetimeInSeconds = options.TokenLifetimeInSeconds,
+        ClockSkewInSeconds = options.ClockSkewInSeconds,
+        MaxStackLimit = options.MaxStackLimit,
+        PreviousKeys = options.PreviousKeys,
+      });
+
+      return;
     }
 
-    options.Service = new BrancaService(options.Key, new BrancaSettings
+    if (branca is not null)
     {
-      TokenLifetimeInSeconds = options.TokenLifetimeInSeconds,
-      ClockSkewInSeconds = options.ClockSkewInSeconds,
-      MaxStackLimit = options.MaxStackLimit,
-      PreviousKeys = options.PreviousKeys,
-    });
+      options.Service = branca;
+
+      return;
+    }
+
+    throw new InvalidOperationException(
+      "No Branca key is configured. Set BrancaOptions.Key or register " +
+      "a service with AddBranca on the service collection.");
   }
 }

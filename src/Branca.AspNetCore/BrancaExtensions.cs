@@ -4,12 +4,26 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 using AspNetCore.Authentication;
+using Branca;
 using Branca.AspNetCore;
 using Extensions;
 using Options;
 
 public static class BrancaExtensions
 {
+  public static AuthenticationBuilder AddBranca(
+    this AuthenticationBuilder builder)
+  {
+    return builder.AddBranca(BrancaDefaults.AuthenticationScheme);
+  }
+
+  public static AuthenticationBuilder AddBranca(
+    this AuthenticationBuilder builder,
+    string authenticationScheme)
+  {
+    return builder.AddBranca(authenticationScheme, static _ => { });
+  }
+
   public static AuthenticationBuilder AddBranca(
     this AuthenticationBuilder builder,
     Action<BrancaOptions> configureOptions)
@@ -42,5 +56,27 @@ public static class BrancaExtensions
 
     return builder.AddScheme<BrancaOptions, BrancaHandler>(
       authenticationScheme, displayName, configureOptions);
+  }
+
+  public static IServiceCollection AddBranca(
+    this IServiceCollection services,
+    BrancaKey key)
+  {
+    return services.AddBranca(key, new BrancaSettings());
+  }
+
+  public static IServiceCollection AddBranca(
+    this IServiceCollection services,
+    BrancaKey key,
+    BrancaSettings settings)
+  {
+    ArgumentNullException.ThrowIfNull(services);
+    ArgumentNullException.ThrowIfNull(key);
+    ArgumentNullException.ThrowIfNull(settings);
+
+    services.TryAddSingleton<IBrancaService>(
+      _ => new BrancaService(key, settings));
+
+    return services;
   }
 }

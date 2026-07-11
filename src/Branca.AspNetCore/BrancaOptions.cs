@@ -35,5 +35,5 @@ public sealed class BrancaOptions : AuthenticationSchemeOptions
     set => base.Events = value;
   }
 
-  internal BrancaService? Service { get; set; }
+  internal IBrancaService? Service { get; set; }
 }
