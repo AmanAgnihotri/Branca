@@ -14,6 +14,7 @@
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/AmanAgnihotri/Branca.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageTags>Branca;Token;Authentication;Authorization</PackageTags>
@@ -32,6 +33,10 @@
 
   <ItemGroup>
     <None Include="../../docs/icon.png">
+      <Pack>true</Pack>
+      <PackagePath>/</PackagePath>
+    </None>
+    <None Include="../../docs/PACKAGE.md">
       <Pack>true</Pack>
       <PackagePath>/</PackagePath>
     </None>
