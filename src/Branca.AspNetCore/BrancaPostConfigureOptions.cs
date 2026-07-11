@@ -22,6 +22,7 @@ internal sealed class BrancaPostConfigureOptions
     {
       TokenLifetimeInSeconds = options.TokenLifetimeInSeconds,
       MaxStackLimit = options.MaxStackLimit,
+      PreviousKeys = options.PreviousKeys,
     });
   }
 }

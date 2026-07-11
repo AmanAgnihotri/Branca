@@ -24,6 +24,7 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
   private readonly ITimer _timer;
   private readonly XChaCha20Poly1305 _algorithm;
+  private readonly XChaCha20Poly1305[] _previousAlgorithms;
 
   public BrancaService(BrancaKey key)
     : this(key, new BrancaSettings()) { }
@@ -56,11 +57,17 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
     _timer = settings.Timer;
     _algorithm = new XChaCha20Poly1305(key);
+    _previousAlgorithms = CreatePreviousAlgorithms(settings.PreviousKeys);
   }
 
   public void Dispose()
   {
     _algorithm.Dispose();
+
+    foreach (XChaCha20Poly1305 algorithm in _previousAlgorithms)
+    {
+      algorithm.Dispose();
+    }
   }
 
   public string Encode(string payload)
@@ -163,11 +170,8 @@ public sealed class BrancaService : IBrancaService, IDisposable
 
     byte[] plaintext = new byte[cipherLength];
 
-    try
-    {
-      _algorithm.Decrypt(nonce, cipher, tag, plaintext, header);
-    }
-    catch (CryptographicException)
+    if (!TryDecrypt(_algorithm, nonce, cipher, tag, plaintext, header) &&
+        !TryDecryptWithPreviousKeys(nonce, cipher, tag, plaintext, header))
     {
       return false;
     }
@@ -176,5 +180,61 @@ public sealed class BrancaService : IBrancaService, IDisposable
     createTime = creationTime;
 
     return true;
+  }
+
+  private bool TryDecryptWithPreviousKeys(
+    ReadOnlySpan<byte> nonce,
+    ReadOnlySpan<byte> cipher,
+    ReadOnlySpan<byte> tag,
+    byte[] plaintext,
+    ReadOnlySpan<byte> header)
+  {
+    foreach (XChaCha20Poly1305 algorithm in _previousAlgorithms)
+    {
+      if (TryDecrypt(algorithm, nonce, cipher, tag, plaintext, header))
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private static bool TryDecrypt(
+    XChaCha20Poly1305 algorithm,
+    ReadOnlySpan<byte> nonce,
+    ReadOnlySpan<byte> cipher,
+    ReadOnlySpan<byte> tag,
+    byte[] plaintext,
+    ReadOnlySpan<byte> header)
+  {
+    try
+    {
+      algorithm.Decrypt(nonce, cipher, tag, plaintext, header);
+
+      return true;
+    }
+    catch (CryptographicException)
+    {
+      return false;
+    }
+  }
+
+  private static XChaCha20Poly1305[] CreatePreviousAlgorithms(
+    IReadOnlyList<BrancaKey> keys)
+  {
+    if (keys.Count == 0)
+    {
+      return [];
+    }
+
+    XChaCha20Poly1305[] algorithms = new XChaCha20Poly1305[keys.Count];
+
+    for (int i = 0; i < keys.Count; ++i)
+    {
+      algorithms[i] = new XChaCha20Poly1305(keys[i].Bytes);
+    }
+
+    return algorithms;
   }
 }

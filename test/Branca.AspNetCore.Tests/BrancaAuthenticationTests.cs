@@ -100,6 +100,25 @@ public sealed class BrancaAuthenticationTests
     Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
   }
 
+  [Fact(DisplayName = "A token from a previous key is accepted after rotation.")]
+  public async Task TokenFromPreviousKeyIsAcceptedAfterRotation()
+  {
+    BrancaKey previous = BrancaKey.Generate();
+
+    await using WebApplication app =
+      await StartAsync(o => o.PreviousKeys = [previous]);
+    using HttpClient client = app.GetTestClient();
+
+    using BrancaService old = new(previous);
+    string token = old.Encode("""{ "name": "erin" }""");
+
+    using HttpResponseMessage response =
+      await GetAsync(client, "/secure", token);
+
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    Assert.Equal("erin", await response.Content.ReadAsStringAsync());
+  }
+
   [Fact(DisplayName = "A matching role is authorized.")]
   public async Task MatchingRoleIsAuthorized()
   {

@@ -10,6 +10,8 @@ public sealed class BrancaOptions : AuthenticationSchemeOptions
 {
   public BrancaKey? Key { get; set; }
 
+  public IReadOnlyList<BrancaKey> PreviousKeys { get; set; } = [];
+
   public uint? TokenLifetimeInSeconds { get; set; } = 3600;
 
   public uint MaxStackLimit { get; set; } = 1024;
