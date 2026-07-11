@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Branca.AspNetCore/Branca.AspNetCore.csproj" />
     <Project Path="src/Branca/Branca.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <Project Path="test/Branca.AspNetCore.Tests/Branca.AspNetCore.Tests.csproj" />
     <Project Path="test/Branca.Tests/Branca.Tests.csproj" />
   </Folder>
 </Solution>
