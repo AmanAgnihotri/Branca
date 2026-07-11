@@ -8,7 +8,7 @@ using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
 
-public sealed class BrancaService : IBrancaService
+public sealed class BrancaService : IBrancaService, IDisposable
 {
   private const int KeyLength = 32;
   private const int VersionLength = 1;
@@ -56,6 +56,11 @@ public sealed class BrancaService : IBrancaService
 
     _timer = settings.Timer;
     _algorithm = new XChaCha20Poly1305(key);
+  }
+
+  public void Dispose()
+  {
+    _algorithm.Dispose();
   }
 
   public string Encode(string payload)

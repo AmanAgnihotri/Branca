@@ -71,6 +71,9 @@ dotnet_code_quality_unused_parameters = all:warning
 # Analyzer scope preferences
 dotnet_code_quality.CA1716.analyzed_symbol_kinds = NamedType, Property, Event, Parameter
 
+# CA1825 misfires on non-empty collection expressions
+dotnet_diagnostic.CA1825.severity = none
+
 #### C# Coding Conventions ####
 
 # var preferences

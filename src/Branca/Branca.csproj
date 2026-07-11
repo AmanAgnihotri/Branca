@@ -2,15 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>default</LangVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>true</ImplicitUsings>
-    <Authors>Aman Agnihotri</Authors>
     <Product>Branca</Product>
     <Title>Branca</Title>
     <Description>A .NET Standard 2.1 library for generating and validating Branca tokens.</Description>
     <Copyright>Copyright © 2022-2026 Aman Agnihotri</Copyright>
-    <PackageVersion>0.8.0</PackageVersion>
+    <Version>0.8.0</Version>
     <PackageProjectUrl>https://github.com/AmanAgnihotri/Branca</PackageProjectUrl>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
@@ -24,11 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NaCl.Core" Version="2.2.0" />
+    <PackageReference Include="NaCl.Core" />
   </ItemGroup>
 
   <ItemGroup>
