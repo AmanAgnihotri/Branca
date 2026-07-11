@@ -12,6 +12,7 @@ jobs:
   publish:
 
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
     - name: Checkout
