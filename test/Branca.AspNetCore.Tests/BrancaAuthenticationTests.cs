@@ -6,10 +6,13 @@ namespace Branca.AspNetCore.Tests;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 public sealed class BrancaAuthenticationTests
@@ -119,7 +122,8 @@ public sealed class BrancaAuthenticationTests
     Assert.Equal("frank", await response.Content.ReadAsStringAsync());
   }
 
-  [Fact(DisplayName = "A token from a previous key is accepted after rotation.")]
+  [Fact(DisplayName =
+    "A token from a previous key is accepted after rotation.")]
   public async Task TokenFromPreviousKeyIsAcceptedAfterRotation()
   {
     BrancaKey previous = BrancaKey.Generate();

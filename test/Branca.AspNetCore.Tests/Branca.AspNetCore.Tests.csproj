@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Branca.AspNetCore\Branca.AspNetCore.csproj"/>
+    <ProjectReference Include="..\..\src\Branca.AspNetCore\Branca.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

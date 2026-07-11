@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 public sealed class DependencyInjectionTests
@@ -20,8 +23,9 @@ public sealed class DependencyInjectionTests
   {
     BrancaKey key = BrancaKey.Generate();
 
-    await using WebApplication app = await StartAsync(
-      services => services.AddBranca(key));
+    await using WebApplication app =
+      await StartAsync(services => services.AddBranca(key));
+
     using HttpClient client = app.GetTestClient();
 
     using HttpResponseMessage login = await client.GetAsync("/login");
@@ -34,7 +38,7 @@ public sealed class DependencyInjectionTests
     Assert.Equal("grace", await response.Content.ReadAsStringAsync());
   }
 
-  [Fact(DisplayName = "The registered service honours its settings.")]
+  [Fact(DisplayName = "The registered service honors its settings.")]
   public async Task TheRegisteredServiceHonoursItsSettings()
   {
     BrancaKey key = BrancaKey.Generate();
@@ -91,8 +95,8 @@ public sealed class DependencyInjectionTests
     await using WebApplication app = await StartAsync(_ => { });
     using HttpClient client = app.GetTestClient();
 
-    await Assert.ThrowsAsync<InvalidOperationException>(
-      () => GetAsync(client, "/secure", "irrelevant"));
+    await Assert.ThrowsAsync<InvalidOperationException>(() =>
+      GetAsync(client, "/secure", "irrelevant"));
   }
 
   private static async Task<HttpResponseMessage> GetAsync(
@@ -139,7 +143,7 @@ public sealed class DependencyInjectionTests
     app.UseAuthorization();
 
     app.MapGet("/login", ([FromServices] IBrancaService branca) =>
-      branca.Encode("""{ "name": "grace" }"""));
+    branca.Encode("""{ "name": "grace" }"""));
 
     app.MapGet("/secure", (ClaimsPrincipal user) => user.Identity?.Name ?? "")
       .RequireAuthorization();
