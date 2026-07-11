@@ -8,11 +8,15 @@ internal sealed class Base62
   private const string CharacterSet =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+  private const byte InvalidCharacter = 0xFF;
+
   private static readonly byte[] _lookupTable;
 
   static Base62()
   {
     _lookupTable = new byte[128];
+
+    Array.Fill(_lookupTable, InvalidCharacter);
 
     for (int i = 0; i < CharacterSet.Length; ++i)
     {
@@ -55,26 +59,56 @@ internal sealed class Base62
     return new string(result.ToArray());
   }
 
-  public static ReadOnlySpan<byte> Decode(string data)
+  public static bool TryDecode(string? data, out byte[] bytes)
   {
-    byte[] bytes = new byte[data.Length];
+    bytes = [];
 
-    for (int i = 0; i < data.Length; i++)
+    if (data is null)
     {
-      bytes[i] = _lookupTable[data[i]];
+      return false;
     }
 
-    int size = (int)Math.Floor(Math.Log(62) / Math.Log(256) * bytes.Length);
+    if (data.Length == 0)
+    {
+      return true;
+    }
+
+    if (data.Length > 1 && data[0] == '0')
+    {
+      return false;
+    }
+
+    byte[] values = new byte[data.Length];
+
+    for (int i = 0; i < data.Length; ++i)
+    {
+      char character = data[i];
+
+      byte value = character < 128
+        ? _lookupTable[character]
+        : InvalidCharacter;
+
+      if (value == InvalidCharacter)
+      {
+        return false;
+      }
+
+      values[i] = value;
+    }
+
+    int size = (int)Math.Floor(Math.Log(62) / Math.Log(256) * values.Length);
 
     Stack<byte> result = new(size);
-    List<byte> quotients = new(bytes.Length);
+    List<byte> quotients = new(values.Length);
 
-    while (bytes.Length > 0)
+    ReadOnlySpan<byte> digits = values;
+
+    while (digits.Length > 0)
     {
       quotients.Clear();
       int remainder = 0;
 
-      foreach (byte value in bytes)
+      foreach (byte value in digits)
       {
         int accumulator = value + (remainder * 62);
         int quotient = Math.DivRem(accumulator, 256, out remainder);
@@ -86,9 +120,11 @@ internal sealed class Base62
       }
 
       result.Push((byte)remainder);
-      bytes = quotients.ToArray();
+      digits = quotients.ToArray();
     }
 
-    return result.ToArray();
+    bytes = result.ToArray();
+
+    return true;
   }
 }

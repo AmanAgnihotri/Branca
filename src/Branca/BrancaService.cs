@@ -119,65 +119,57 @@ public sealed class BrancaService : IBrancaService
     out byte[] payload,
     out uint createTime)
   {
-    ReadOnlySpan<byte> data = Base62.Decode(token);
+    payload = [];
+    createTime = 0;
 
-    Span<byte> version = stackalloc byte[VersionLength];
-    data[..VersionLength].CopyTo(version);
-
-    if (version.IsEmpty || version[0] != Version)
+    if (!Base62.TryDecode(token, out byte[] decoded))
     {
-      payload = [];
-      createTime = 0;
-
       return false;
     }
 
-    Span<byte> timestamp = stackalloc byte[TimeLength];
-    data.Slice(VersionLength, TimeLength).CopyTo(timestamp);
+    ReadOnlySpan<byte> data = decoded;
+
+    if (data.Length < HeaderLength + TagLength)
+    {
+      return false;
+    }
+
+    if (data[0] != Version)
+    {
+      return false;
+    }
+
+    ReadOnlySpan<byte> timestamp = data.Slice(VersionLength, TimeLength);
 
     uint creationTime = BinaryPrimitives.ReadUInt32BigEndian(timestamp);
 
     if (_lifetime.HasValue && _lifetime < _timer.UnixNow - creationTime)
     {
-      payload = [];
-      createTime = 0;
-
       return false;
     }
 
-    Span<byte> header = stackalloc byte[HeaderLength];
-    data[..HeaderLength].CopyTo(header);
-
-    Span<byte> nonce = stackalloc byte[NonceLength];
-    header[(VersionLength + TimeLength)..].CopyTo(nonce);
+    ReadOnlySpan<byte> header = data[..HeaderLength];
+    ReadOnlySpan<byte> nonce = header[(VersionLength + TimeLength)..];
 
     int cipherLength = data.Length - HeaderLength - TagLength;
 
-    Span<byte> cipher = cipherLength <= _maxStackLimit
-      ? stackalloc byte[cipherLength]
-      : new byte[cipherLength];
+    ReadOnlySpan<byte> cipher = data.Slice(HeaderLength, cipherLength);
+    ReadOnlySpan<byte> tag = data[(HeaderLength + cipherLength)..];
 
-    data.Slice(HeaderLength, cipherLength).CopyTo(cipher);
-
-    Span<byte> tag = stackalloc byte[TagLength];
-    data[(HeaderLength + cipherLength)..].CopyTo(tag);
+    byte[] plaintext = new byte[cipherLength];
 
     try
     {
-      payload = new byte[cipherLength];
-
-      _algorithm.Decrypt(nonce, cipher, tag, payload, header);
-
-      createTime = creationTime;
-
-      return true;
+      _algorithm.Decrypt(nonce, cipher, tag, plaintext, header);
     }
-    catch (Exception)
+    catch (CryptographicException)
     {
-      payload = [];
-      createTime = 0;
-
       return false;
     }
+
+    payload = plaintext;
+    createTime = creationTime;
+
+    return true;
   }
 }
