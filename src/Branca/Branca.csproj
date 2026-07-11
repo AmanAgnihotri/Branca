@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net10.0</TargetFrameworks>
+    <IsAotCompatible Condition="'$(TargetFramework)' == 'net10.0'">true</IsAotCompatible>
     <Product>Branca</Product>
     <Title>Branca</Title>
     <Description>A .NET Standard 2.1 library for generating and validating Branca tokens.</Description>
