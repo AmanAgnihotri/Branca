@@ -1,61 +1,30 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-* text eol=lf
+# Normalize text files to LF in the index and working tree.
+* text=auto eol=lf
 
+# Binary means no text conversion, no textual diff, and no EOL handling.
+[attr]binary-file binary !eol
+
+# Better built-in diffs for common source formats.
 *.cs diff=csharp
+*.py diff=python
+*.md diff=markdown
+*.html diff=html
+*.css diff=css
+*.js diff=javascript
 
-#
-# The above will handle all files NOT found below.
-#
+# Binary image assets.
+*.avif binary-file
+*.bmp binary-file
+*.gif binary-file
+*.ico binary-file
+*.jpeg binary-file
+*.jpg binary-file
+*.png binary-file
+*.webp binary-file
 
-# Visual Studio
-*.sln         text eol=crlf
-*.csproj      text eol=crlf
-
-# Web
-*.css         text
-*.htm         text diff=html
-*.html        text diff=html
-*.js          text
-*.json        text
-*.xml         text
-*.xhtml       text diff=html
-
-# Documentation
-*.md          text
-*.txt         text
-AUTHORS       text
-CHANGELOG     text
-CHANGES       text
-CONTRIBUTING  text
-COPYING       text
-COPYRIGHT     text
-*COPYRIGHT*   text
-INSTALL       text
-LICENSE       text
-NEWS          text
-README        text
-*README*      text
-TODO          text
-
-# Configs
-.gitattributes  text
-.gitconfig      text
-.gitignore      text
-
-# Graphics
-*.png   binary
-*.jpg   binary
-*.jpeg  binary
-*.gif   binary
-*.tif   binary
-*.tiff  binary
-*.ico   binary
-*.svg   binary
-
-# Fonts
-*.ttf   binary
-*.eot   binary
-*.otf   binary
-*.woff  binary
-*.woff2 binary
+# Binary font assets.
+*.eot binary-file
+*.otf binary-file
+*.ttf binary-file
+*.woff binary-file
+*.woff2 binary-file
