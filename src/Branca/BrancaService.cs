@@ -78,33 +78,25 @@ public sealed class BrancaService : IBrancaService
     uint createTime,
     ReadOnlySpan<byte> nonce)
   {
-    Span<byte> version = stackalloc byte[VersionLength] { Version };
-
-    Span<byte> timestamp = stackalloc byte[TimeLength];
-    BinaryPrimitives.WriteUInt32BigEndian(timestamp, createTime);
-
-    Span<byte> header = stackalloc byte[HeaderLength];
-    version.CopyTo(header[..VersionLength]);
-    timestamp.CopyTo(header.Slice(VersionLength, TimeLength));
-    nonce.CopyTo(header[(VersionLength + TimeLength)..]);
-
-    Span<byte> cipher = payload.Length <= _maxStackLimit
-      ? stackalloc byte[payload.Length]
-      : new byte[payload.Length];
-
-    Span<byte> tag = stackalloc byte[TagLength];
-
-    _algorithm.Encrypt(nonce, payload, cipher, tag, header);
-
-    int tokenLength = HeaderLength + cipher.Length + tag.Length;
+    int tokenLength = HeaderLength + payload.Length + TagLength;
 
     Span<byte> token = tokenLength <= _maxStackLimit
       ? stackalloc byte[tokenLength]
       : new byte[tokenLength];
 
-    header.CopyTo(token[..HeaderLength]);
-    cipher.CopyTo(token.Slice(HeaderLength, cipher.Length));
-    tag.CopyTo(token[(HeaderLength + cipher.Length)..]);
+    Span<byte> header = token[..HeaderLength];
+
+    header[0] = Version;
+
+    BinaryPrimitives.WriteUInt32BigEndian(
+      header.Slice(VersionLength, TimeLength), createTime);
+
+    nonce.CopyTo(header[(VersionLength + TimeLength)..]);
+
+    Span<byte> cipher = token.Slice(HeaderLength, payload.Length);
+    Span<byte> tag = token[(HeaderLength + payload.Length)..];
+
+    _algorithm.Encrypt(nonce, payload, cipher, tag, header);
 
     return Base62.Encode(token);
   }

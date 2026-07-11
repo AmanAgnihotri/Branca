@@ -3,60 +3,57 @@
 
 namespace Branca;
 
-internal sealed class Base62
+internal static class Base62
 {
   private const string CharacterSet =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
   private const byte InvalidCharacter = 0xFF;
 
-  private static readonly byte[] _lookupTable;
-
-  static Base62()
-  {
-    _lookupTable = new byte[128];
-
-    Array.Fill(_lookupTable, InvalidCharacter);
-
-    for (int i = 0; i < CharacterSet.Length; ++i)
-    {
-      _lookupTable[CharacterSet[i]] = (byte)(i & 0xFF);
-    }
-  }
+  private static readonly byte[] _lookupTable = CreateLookupTable();
 
   public static string Encode(ReadOnlySpan<byte> bytes)
   {
-    if (bytes.Length == 0)
+    int offset = 0;
+
+    while (offset < bytes.Length && bytes[offset] == 0)
     {
-      return string.Empty;
+      ++offset;
     }
 
-    int size = (int)Math.Ceiling(Math.Log(256) / Math.Log(62) * bytes.Length);
-
-    Stack<char> result = new(size);
-    List<byte> quotients = new(bytes.Length);
-
-    while (bytes.Length > 0)
+    if (offset == bytes.Length)
     {
-      quotients.Clear();
+      return bytes.IsEmpty ? string.Empty : "0";
+    }
+
+    byte[] number = bytes[offset..].ToArray();
+
+    // Base62 never needs more characters than base16 would use.
+    char[] encoded = new char[number.Length * 2];
+
+    int position = encoded.Length;
+    int start = 0;
+
+    while (start < number.Length)
+    {
       int remainder = 0;
 
-      foreach (byte value in bytes)
+      for (int i = start; i < number.Length; ++i)
       {
-        int accumulator = value + (remainder * 256);
-        int quotient = Math.DivRem(accumulator, 62, out remainder);
-
-        if (quotients.Count > 0 || quotient != 0)
-        {
-          quotients.Add((byte)quotient);
-        }
+        int accumulator = (remainder << 8) | number[i];
+        number[i] = (byte)(accumulator / 62);
+        remainder = accumulator % 62;
       }
 
-      result.Push(CharacterSet[remainder]);
-      bytes = quotients.ToArray();
+      encoded[--position] = CharacterSet[remainder];
+
+      while (start < number.Length && number[start] == 0)
+      {
+        ++start;
+      }
     }
 
-    return new string(result.ToArray());
+    return new string(encoded, position, encoded.Length - position);
   }
 
   public static bool TryDecode(string? data, out byte[] bytes)
@@ -78,7 +75,7 @@ internal sealed class Base62
       return false;
     }
 
-    byte[] values = new byte[data.Length];
+    byte[] digits = new byte[data.Length];
 
     for (int i = 0; i < data.Length; ++i)
     {
@@ -93,38 +90,57 @@ internal sealed class Base62
         return false;
       }
 
-      values[i] = value;
+      digits[i] = value;
     }
 
-    int size = (int)Math.Floor(Math.Log(62) / Math.Log(256) * values.Length);
-
-    Stack<byte> result = new(size);
-    List<byte> quotients = new(values.Length);
-
-    ReadOnlySpan<byte> digits = values;
-
-    while (digits.Length > 0)
+    if (digits[0] == 0)
     {
-      quotients.Clear();
+      bytes = [0];
+
+      return true;
+    }
+
+    // Base62 always needs at least as many characters as bytes it holds.
+    byte[] decoded = new byte[digits.Length];
+
+    int position = decoded.Length;
+    int start = 0;
+
+    while (start < digits.Length)
+    {
       int remainder = 0;
 
-      foreach (byte value in digits)
+      for (int i = start; i < digits.Length; ++i)
       {
-        int accumulator = value + (remainder * 62);
-        int quotient = Math.DivRem(accumulator, 256, out remainder);
-
-        if (quotients.Count > 0 || quotient != 0)
-        {
-          quotients.Add((byte)quotient);
-        }
+        int accumulator = (remainder * 62) + digits[i];
+        digits[i] = (byte)(accumulator >> 8);
+        remainder = accumulator & 0xFF;
       }
 
-      result.Push((byte)remainder);
-      digits = quotients.ToArray();
+      decoded[--position] = (byte)remainder;
+
+      while (start < digits.Length && digits[start] == 0)
+      {
+        ++start;
+      }
     }
 
-    bytes = result.ToArray();
+    bytes = decoded[position..];
 
     return true;
+  }
+
+  private static byte[] CreateLookupTable()
+  {
+    byte[] table = new byte[128];
+
+    Array.Fill(table, InvalidCharacter);
+
+    for (int i = 0; i < CharacterSet.Length; ++i)
+    {
+      table[CharacterSet[i]] = (byte)i;
+    }
+
+    return table;
   }
 }
