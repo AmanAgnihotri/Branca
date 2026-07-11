@@ -6,6 +6,9 @@ namespace Branca.Tests;
 using Xunit;
 using static TestData;
 
+// HexKey is deprecated in favor of BrancaKey;
+// These tests still verify that the compatibility shim keeps working.
+#pragma warning disable CS0618
 public sealed class HexKeyTests
 {
   [Theory(DisplayName = "Valid hex keys get parsed successfully.")]
@@ -29,3 +32,4 @@ public sealed class HexKeyTests
     });
   }
 }
+#pragma warning restore CS0618

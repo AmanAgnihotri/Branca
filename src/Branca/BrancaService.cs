@@ -25,9 +25,17 @@ public sealed class BrancaService : IBrancaService
   private readonly ITimer _timer;
   private readonly XChaCha20Poly1305 _algorithm;
 
+  public BrancaService(BrancaKey key)
+    : this(key, new BrancaSettings()) { }
+
+  public BrancaService(BrancaKey key, BrancaSettings settings)
+    : this(key.Bytes, settings) { }
+
+  [Obsolete("Use the BrancaKey overload instead.")]
   public BrancaService(HexKey hexKey)
     : this(hexKey, new BrancaSettings()) { }
 
+  [Obsolete("Use the BrancaKey overload instead.")]
   public BrancaService(HexKey hexKey, BrancaSettings settings)
     : this(hexKey.Bytes, settings) { }
 

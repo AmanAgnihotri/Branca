@@ -5,7 +5,7 @@ namespace Branca.Tests;
 
 public sealed record BrancaState
 {
-  public HexKey Key { get; }
+  public BrancaKey Key { get; }
 
   public ReadOnlyMemory<byte> Nonce { get; }
 
@@ -18,14 +18,14 @@ public sealed record BrancaState
   public bool IsValid { get; }
 
   public BrancaState(
-    HexKey key,
+    string key,
     string? nonce,
     uint timestamp,
     string token,
     string message,
     bool isValid)
   {
-    Key = key;
+    Key = BrancaKey.FromHex(key);
     Nonce = nonce.AsBytesFromHexString();
     Timestamp = timestamp;
     Token = token;

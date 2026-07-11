@@ -6,14 +6,21 @@ Branca tokens are authenticated and encrypted API tokens using modern crypto. Th
 
 ## Usage
 
-Configure a `BrancaService` with a 32-byte secret key, given either as a `byte[]` or as a 64-character hexadecimal `HexKey`:
+Configure a `BrancaService` with a 32-byte secret key:
 
 ```c#
 using Branca;
 
-HexKey key = "73757065727365637265746b6579796f7573686f756c646e6f74636f6d6d6974";
+BrancaKey key = BrancaKey.Generate();
 
 BrancaService branca = new(key);
+```
+
+Existing keys load from hexadecimal, Base64Url, Base62 or raw bytes:
+
+```c#
+BrancaKey key = BrancaKey.FromHex(
+  "73757065727365637265746b6579796f7573686f756c646e6f74636f6d6d6974");
 ```
 
 Encode a payload into a token:

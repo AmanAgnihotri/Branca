@@ -29,7 +29,7 @@ public sealed class TokenLifetimeTests
   [Fact(DisplayName = "Decode arbitrarily old tokens without a lifetime.")]
   public void DecodeArbitrarilyOldTokensWithoutLifetime()
   {
-    BrancaService branca = new(Key, new BrancaSettings
+    BrancaService branca = new(BrancaKey.FromHex(Key), new BrancaSettings
     {
       Timer = new MockTimer(uint.MaxValue), TokenLifetimeInSeconds = null,
     });
@@ -39,7 +39,7 @@ public sealed class TokenLifetimeTests
 
   private static BrancaService Create(uint now)
   {
-    return new BrancaService(Key, new BrancaSettings
+    return new BrancaService(BrancaKey.FromHex(Key), new BrancaSettings
     {
       Timer = new MockTimer(now), TokenLifetimeInSeconds = Lifetime,
     });

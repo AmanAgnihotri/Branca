@@ -5,6 +5,23 @@ namespace Branca;
 
 internal static class StringExtensions
 {
+  private const string HexDigits = "0123456789abcdef";
+
+  public static string AsHexString(this ReadOnlySpan<byte> bytes)
+  {
+    Span<char> hex = bytes.Length <= 512
+      ? stackalloc char[bytes.Length * 2]
+      : new char[bytes.Length * 2];
+
+    for (int i = 0; i < bytes.Length; ++i)
+    {
+      hex[i * 2] = HexDigits[bytes[i] >> 4];
+      hex[(i * 2) + 1] = HexDigits[bytes[i] & 0x0F];
+    }
+
+    return new string(hex);
+  }
+
   public static ReadOnlyMemory<byte> AsBytesFromHexString(this string? hexKey)
   {
     if (hexKey is null)
