@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2022 Aman Agnihotri
+// Copyright © 2022-2026 Aman Agnihotri
 
 namespace Branca;
 
@@ -25,12 +25,14 @@ public sealed class BrancaService : IBrancaService
   private readonly ITimer _timer;
   private readonly XChaCha20Poly1305 _algorithm;
 
-  public BrancaService(HexKey hexKey) : this(hexKey, new()) { }
+  public BrancaService(HexKey hexKey)
+    : this(hexKey, new BrancaSettings()) { }
 
-  public BrancaService(HexKey hexKey, BrancaSettings settings) :
-    this(hexKey.Bytes, settings) { }
+  public BrancaService(HexKey hexKey, BrancaSettings settings)
+    : this(hexKey.Bytes, settings) { }
 
-  public BrancaService(ReadOnlyMemory<byte> key) : this(key, new()) { }
+  public BrancaService(ReadOnlyMemory<byte> key)
+    : this(key, new BrancaSettings()) { }
 
   public BrancaService(ReadOnlyMemory<byte> key, BrancaSettings settings)
   {
@@ -76,7 +78,7 @@ public sealed class BrancaService : IBrancaService
     uint createTime,
     ReadOnlySpan<byte> nonce)
   {
-    Span<byte> version = stackalloc byte[VersionLength] {Version};
+    Span<byte> version = stackalloc byte[VersionLength] { Version };
 
     Span<byte> timestamp = stackalloc byte[TimeLength];
     BinaryPrimitives.WriteUInt32BigEndian(timestamp, createTime);
@@ -124,8 +126,8 @@ public sealed class BrancaService : IBrancaService
 
     if (version.IsEmpty || version[0] != Version)
     {
-      payload = Array.Empty<byte>();
-      createTime = default;
+      payload = [];
+      createTime = 0;
 
       return false;
     }
@@ -137,8 +139,8 @@ public sealed class BrancaService : IBrancaService
 
     if (_lifetime.HasValue && _lifetime < _timer.UnixNow - creationTime)
     {
-      payload = Array.Empty<byte>();
-      createTime = default;
+      payload = [];
+      createTime = 0;
 
       return false;
     }
@@ -172,8 +174,8 @@ public sealed class BrancaService : IBrancaService
     }
     catch (Exception)
     {
-      payload = Array.Empty<byte>();
-      createTime = default;
+      payload = [];
+      createTime = 0;
 
       return false;
     }

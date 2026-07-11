@@ -10,7 +10,7 @@ public sealed record HexKey
 
   public ReadOnlyMemory<byte> Bytes { get; }
 
-  public HexKey(string hexKey)
+  public HexKey(string? hexKey)
   {
     if (hexKey is null || hexKey.Length != HexKeyLength)
     {

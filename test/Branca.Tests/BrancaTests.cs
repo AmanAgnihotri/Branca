@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2022 Aman Agnihotri
+// Copyright © 2022-2026 Aman Agnihotri
 
 namespace Branca.Tests;
 
@@ -40,12 +40,11 @@ public sealed class BrancaTests
 
     Assert.StrictEqual(data.IsValid, isValid);
     Assert.True(message == Array.Empty<byte>());
-    Assert.True(timestamp == default);
+    Assert.Equal(0U, timestamp);
   }
 
-  public static readonly TheoryData<BrancaState> ValidTestData = new()
-  {
-    // Hello world with zero timestamp
+  public static readonly TheoryData<BrancaState> ValidTestData =
+  [
     new(Key, Nonce, MinTime, Token01, HelloMessage, true),
     // Hello world with max timestamp
     new(Key, Nonce, MaxTime, Token02, HelloMessage, true),
@@ -60,12 +59,11 @@ public sealed class BrancaTests
     // Empty payload
     new(Key, Nonce, MinTime, Token07, EmptyMessage, true),
     // Non-UTF8 payload
-    new(Key, Nonce, Nov2773, Token08, Hex80Message, true)
-  };
+    new(Key, Nonce, Nov2773, Token08, Hex80Message, true),
+  ];
 
-  public static readonly TheoryData<BrancaState> InvalidTestData = new()
-  {
-    // Wrong version 0xBB
+  public static readonly TheoryData<BrancaState> InvalidTestData =
+  [
     new(Key, NullNonce, MinTime, Token09, EmptyMessage, false),
     // Invalid base62 characters
     new(Key, NullNonce, Nov2773, Token10, HelloMessage, false),
@@ -80,6 +78,6 @@ public sealed class BrancaTests
     // Modified last byte of the Poly1305 tag
     new(Key, NullNonce, MinTime, Token15, HelloMessage, false),
     // Wrong key
-    new(ValidKey02, NullNonce, MinTime, Token01, HelloMessage, false)
-  };
+    new(ValidKey02, NullNonce, MinTime, Token01, HelloMessage, false),
+  ];
 }

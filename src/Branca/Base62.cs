@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2022 Aman Agnihotri
+// Copyright © 2022-2026 Aman Agnihotri
 
 namespace Branca;
 
@@ -8,15 +8,15 @@ internal sealed class Base62
   private const string CharacterSet =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-  private static readonly byte[] LookupTable;
+  private static readonly byte[] _lookupTable;
 
   static Base62()
   {
-    LookupTable = new byte[128];
+    _lookupTable = new byte[128];
 
     for (int i = 0; i < CharacterSet.Length; ++i)
     {
-      LookupTable[CharacterSet[i]] = (byte)(i & 0xFF);
+      _lookupTable[CharacterSet[i]] = (byte)(i & 0xFF);
     }
   }
 
@@ -61,7 +61,7 @@ internal sealed class Base62
 
     for (int i = 0; i < data.Length; i++)
     {
-      bytes[i] = LookupTable[data[i]];
+      bytes[i] = _lookupTable[data[i]];
     }
 
     int size = (int)Math.Floor(Math.Log(62) / Math.Log(256) * bytes.Length);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2022 Aman Agnihotri
+// Copyright © 2022-2026 Aman Agnihotri
 
 namespace Branca;
 
@@ -32,13 +32,19 @@ internal static class StringExtensions
     {
       bytes[i] = (byte)((Hex(hexKey[j]) << 4) + Hex(hexKey[j + 1]));
 
-      static int Hex(char hex) =>
-        hex - (hex <= '9' ? '0' : hex < 'a' ? '7' : 'W');
+      continue;
+
+      static int Hex(char hex)
+      {
+        return hex - (hex <= '9' ? '0' : hex < 'a' ? '7' : 'W');
+      }
     }
 
     return bytes;
 
-    static bool IsNotHexCharacter(char c) =>
-      c is (< '0' or > '9') and (< 'a' or > 'f') and (< 'A' or > 'F');
+    static bool IsNotHexCharacter(char c)
+    {
+      return c is (< '0' or > '9') and (< 'a' or > 'f') and (< 'A' or > 'F');
+    }
   }
 }
